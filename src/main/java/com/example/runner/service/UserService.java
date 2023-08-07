@@ -1,7 +1,9 @@
 package com.example.runner.service;
 
 import com.example.runner.dtos.RegistrationUserDto;
+import com.example.runner.dtos.UserInfoDto;
 import com.example.runner.entities.User;
+import com.example.runner.mappers.UserMapper;
 import com.example.runner.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -53,5 +55,13 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
         user.setRoles(List.of(roleService.getUserRole()));
         return userRepository.save(user);
+    }
+
+    public UserInfoDto getUserInfo(String username) {
+        User user = findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("User '%s' not found  ", username)
+        ));
+
+        return UserMapper.INSTANCE.mapUserToUserInfoDto(user);
     }
 }

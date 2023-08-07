@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Collection;
 
@@ -22,7 +23,7 @@ public class User {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column(name = "password")
@@ -55,10 +56,10 @@ public class User {
     @Column(name = "total_km")
     private Double totalKm;
 
-//    @Column(name = "selected_goals_indexes") todo
+//    @Column(name = "selected_goals_indexes") //todo
 //    private List<Integer> selectedGoalsIndexes;
 //
-//    @Column(name = "selected_split_indexes") todo
+//    @Column(name = "selected_split_indexes") //todo
 //    private List<Integer> selectedSplitIndexes;
 
     @ManyToMany
@@ -69,7 +70,9 @@ public class User {
     )
     private Collection<Role> roles;
 
-//    private Set<Group> groups;
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
 }
 
 // todo
