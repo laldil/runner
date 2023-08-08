@@ -1,6 +1,7 @@
 package com.example.runner.service;
 
 import com.example.runner.dtos.RegistrationUserDto;
+import com.example.runner.dtos.UpdateUserDto;
 import com.example.runner.dtos.UserInfoDto;
 import com.example.runner.entities.User;
 import com.example.runner.mappers.UserMapper;
@@ -62,6 +63,16 @@ public class UserService implements UserDetailsService {
                 String.format("User '%s' not found  ", username)
         ));
 
+        return UserMapper.INSTANCE.mapUserToUserInfoDto(user);
+    }
+
+    public UserInfoDto updateUser(String username, UpdateUserDto updateUserDto){
+        if (userRepository.findByUsername(username).isEmpty()){
+            throw new UsernameNotFoundException("User %s not found");
+        }
+        User user = userRepository.findByUsername(username).get();
+        user = UserMapper.INSTANCE.mapUpdateUserDtoToUser(updateUserDto);
+        userRepository.save(user);
         return UserMapper.INSTANCE.mapUserToUserInfoDto(user);
     }
 }
