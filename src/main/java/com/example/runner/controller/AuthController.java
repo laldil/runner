@@ -1,36 +1,38 @@
 package com.example.runner.controller;
 
-import com.example.runner.dtos.JwtRequest;
-import com.example.runner.dtos.RegistrationUserDto;
-import com.example.runner.exceptions.UserAlreadyExistsException;
+import com.example.runner.dtos.LoginRequest;
+import com.example.runner.dtos.RegistrationUserRequest;
 import com.example.runner.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 
 @RequiredArgsConstructor
+@RequestMapping("/auth")
 @RestController
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/auth")
-    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
+    @PostMapping("/login")
+    public ResponseEntity<?> createAuthToken(@RequestBody @Valid LoginRequest authRequest) {
         try {
-            return ResponseEntity.ok().body(authService.createAuthToken(authRequest));
-        } catch (BadCredentialsException e){
+            return ResponseEntity.ok().body(authService.login(authRequest));
+        } catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
+    public ResponseEntity<?> createNewUser(@RequestBody @Valid RegistrationUserRequest request) {
         try {
-            return ResponseEntity.ok().body(authService.createNewUser(registrationUserDto));
-        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.ok().body(authService.registration(request));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

@@ -3,6 +3,7 @@ package com.example.runner.entities;
 import lombok.Data;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,11 +14,12 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @Table(name = "users")
 @Entity
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -56,11 +58,13 @@ public class User {
     @Column(name = "total_km")
     private Double totalKm;
 
-//    @Column(name = "selected_goals_indexes") //todo
-//    private List<Integer> selectedGoalsIndexes;
-//
-//    @Column(name = "selected_split_indexes") //todo
-//    private List<Integer> selectedSplitIndexes;
+    @ElementCollection
+    @Column(name = "selected_goals_indexes")
+    private List<Integer> selectedGoalsIndexes;
+
+    @ElementCollection
+    @Column(name = "selected_split_indexes")
+    private List<Integer> selectedSplitIndexes;
 
     @ManyToMany
     @JoinTable(
@@ -68,11 +72,11 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Collection<Role> roles;
+    private Collection<RoleEntity> roles;
 
     @ManyToOne
     @JoinColumn(name = "group_id")
-    private Group group;
+    private GroupEntity group;
 }
 
 // todo

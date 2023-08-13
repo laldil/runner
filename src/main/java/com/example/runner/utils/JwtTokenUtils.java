@@ -3,6 +3,7 @@ package com.example.runner.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class JwtTokenUtils {
     @Value("${jwt.secret}")
@@ -54,5 +56,16 @@ public class JwtTokenUtils {
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public boolean validateJwtToken(String jwt) {
+        try {
+            Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt);
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
+        return false;
     }
 }

@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Table(name = "roles")
 @Entity
-public class Role {
+public class RoleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -23,7 +23,7 @@ public class Role {
     @Column(name = "name")
     private String name;
 
-    public Role(String name){
+    public RoleEntity(String name){
         this.name = name;
     }
 }
