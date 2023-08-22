@@ -18,7 +18,7 @@ public class GroupEntity {
 
     private String name;
     private String description;
-    private String image; // todo
+    private String image;
     private Double totalKm;
     private Integer coins;
 }

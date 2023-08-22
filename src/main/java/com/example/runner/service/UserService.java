@@ -4,6 +4,7 @@ import com.example.runner.dtos.RegistrationUserRequest;
 import com.example.runner.dtos.UpdateUserDto;
 import com.example.runner.dtos.UserInfoDto;
 import com.example.runner.entities.UserEntity;
+import com.example.runner.exceptions.UserAlreadyExistsException;
 import com.example.runner.mappers.UserMapper;
 import com.example.runner.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,8 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public UserEntity createNewUser(RegistrationUserRequest request) {
+    public UserEntity createNewUser(RegistrationUserRequest request) throws UserAlreadyExistsException {
+        validateUserCreation(request);
         UserEntity user = UserMapper.INSTANCE.registrationUserDtoToUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRoles(List.of(roleService.getUserRole()));
@@ -64,13 +66,21 @@ public class UserService implements UserDetailsService {
         return UserMapper.INSTANCE.userToUserInfoDto(user);
     }
 
-    public UserInfoDto updateUser(String username, UpdateUserDto updateUserDto){
-        if (userRepository.findByUsername(username).isEmpty()){
-            throw new UsernameNotFoundException("User %s not found");
+    public UserInfoDto updateUser(String username, UpdateUserDto updateUserDto) {
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", username)));
+
+        UserMapper.INSTANCE.updateUserEntity(updateUserDto, user);
+
+        return UserMapper.INSTANCE.userToUserInfoDto(userRepository.save(user));
+    }
+
+    private void validateUserCreation(RegistrationUserRequest request) throws UserAlreadyExistsException {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new UserAlreadyExistsException("User with specified name already exists");
         }
-        UserEntity user = userRepository.findByUsername(username).get();
-        user = UserMapper.INSTANCE.updateUserDtoToUser(updateUserDto);
-        userRepository.save(user);
-        return UserMapper.INSTANCE.userToUserInfoDto(user);
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new UserAlreadyExistsException("User with specified email already exists");
+        }
     }
 }

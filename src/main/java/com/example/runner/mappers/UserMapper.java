@@ -7,6 +7,7 @@ import com.example.runner.dtos.UpdateUserDto;
 import com.example.runner.dtos.UserInfoDto;
 import com.example.runner.entities.UserEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -15,11 +16,11 @@ public interface UserMapper {
 
     UserInfoDto userToUserInfoDto(UserEntity user);
 
-    UserEntity updateUserDtoToUser(UpdateUserDto updateUserDto);
-
     UserEntity registrationUserDtoToUser(RegistrationUserRequest request);
 
     LoginResponse userEntityToLoginResponse(UserEntity user);
 
     RegistrationUserResponse userEntityToRegistrationResponse(UserEntity user);
+
+    void updateUserEntity(UpdateUserDto updateUserDto, @MappingTarget UserEntity userEntity);
 }

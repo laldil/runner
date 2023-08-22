@@ -1,12 +1,12 @@
 package com.example.runner.utils;
 
+import com.example.runner.entities.RoleEntity;
+import com.example.runner.entities.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -25,22 +25,26 @@ public class JwtTokenUtils {
     @Value("${jwt.lifetime}")
     private Duration jwtLifetime;
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserEntity user, Duration lifetime) {
         Map<String, Object> claims = new HashMap<>();
-        List<String> rolesList = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
+        List<String> rolesList = user.getRoles().stream()
+                .map(RoleEntity::getName)
                 .collect(Collectors.toList());
         claims.put("roles", rolesList);
 
         Date issuedDate = new Date();
-        Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
+        Date expiredDate = new Date(issuedDate.getTime() + lifetime.toMillis());
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(user.getUsername())
                 .setIssuedAt(issuedDate)
                 .setExpiration(expiredDate)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
+    }
+
+    public String generateToken(UserEntity user) {
+        return generateToken(user, jwtLifetime);
     }
 
     public String getUsername(String token) {
@@ -58,9 +62,9 @@ public class JwtTokenUtils {
                 .getBody();
     }
 
-    public boolean validateJwtToken(String jwt) {
+    public boolean validateJwtToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt);
+            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             log.error(e.getMessage());

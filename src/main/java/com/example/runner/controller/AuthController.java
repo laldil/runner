@@ -1,6 +1,7 @@
 package com.example.runner.controller;
 
 import com.example.runner.dtos.LoginRequest;
+import com.example.runner.dtos.RefreshTokenDto;
 import com.example.runner.dtos.RegistrationUserRequest;
 import com.example.runner.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,15 @@ public class AuthController {
     public ResponseEntity<?> createNewUser(@RequestBody @Valid RegistrationUserRequest request) {
         try {
             return ResponseEntity.ok().body(authService.registration(request));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/token/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody @Valid RefreshTokenDto dto) {
+        try {
+            return ResponseEntity.ok().body(authService.refreshAccessToken(dto));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

@@ -10,7 +10,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class RegistrationUserResponse {
-    private String token;
+    private String accessToken;
+    private String refreshToken;
     private Long id;
     private String username;
     private String email;
