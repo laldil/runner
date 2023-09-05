@@ -6,8 +6,10 @@ import com.example.runner.dtos.RegistrationUserResponse;
 import com.example.runner.dtos.UpdateUserDto;
 import com.example.runner.dtos.UserInfoDto;
 import com.example.runner.entities.UserEntity;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -22,5 +24,6 @@ public interface UserMapper {
 
     RegistrationUserResponse userEntityToRegistrationResponse(UserEntity user);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUserEntity(UpdateUserDto updateUserDto, @MappingTarget UserEntity userEntity);
 }
